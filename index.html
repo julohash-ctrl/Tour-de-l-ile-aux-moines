@@ -79,7 +79,7 @@ button.badge{font:500 14px var(--sans);color:var(--ink);text-align:left;cursor:p
 #vmg .v small{font-size:14px;font-weight:500;color:var(--ink-soft)}
 #vmgHint{font-size:13px;font-weight:600;margin-top:3px}
 /* minimap */
-#mini{right:12px;top:calc(196px + env(safe-area-inset-top,0px));padding:6px}
+#mini{right:12px;top:calc(240px + env(safe-area-inset-top,0px));padding:6px}
 #mini canvas{display:block;border-radius:3px}
 /* help */
 #help{left:12px;top:calc(150px + env(safe-area-inset-top,0px));padding:10px 14px;font-size:13.5px;line-height:1.55;max-width:250px}
@@ -165,6 +165,13 @@ button.badge{font:500 14px var(--sans);color:var(--ink);text-align:left;cursor:p
 #resBots li{padding:2px 0}
 #resBots li.me{font-weight:600}
 #resBots .tm{font-family:var(--cond);font-weight:600;margin-left:6px}
+.goRow{display:flex;flex-wrap:wrap;align-items:center;gap:10px;margin-top:22px}
+.goRow #go{margin-top:0}
+#tutoLink{font:600 16px var(--sans);color:var(--ink);background:transparent;border:1px solid var(--ink);border-radius:6px;padding:11px 16px;cursor:pointer}
+#tutoLink:hover{background:rgba(38,55,74,.06)}
+#tutoLink:focus-visible,#helpBtn:focus-visible{outline:2px solid var(--magenta);outline-offset:2px}
+#helpBtn{font:500 14px var(--sans);color:var(--ink);cursor:pointer;display:flex;align-items:center;gap:9px;padding:7px 12px}
+#helpBtn .q{width:20px;height:20px;border-radius:50%;background:var(--ink);color:var(--vellum);font:700 13px/20px var(--sans);text-align:center;flex:none}
 .linkBtn{display:block;margin-top:14px;padding:0;border:0;background:none;color:var(--ink-soft);font:500 14px var(--sans);text-decoration:underline;cursor:pointer}
 #result .big{font-family:var(--cond);font-size:64px;font-weight:700;line-height:1;margin:6px 0}
 /* touch */
@@ -255,6 +262,7 @@ body.mob #toast{font-size:22px;top:30%}
   <div class="mrow mobOnly"><button class="mb wide" data-a="pause">Pause</button><button class="mb wide" data-a="tow">Remorquage</button></div>
   <div class="mrow mobOnly"><button class="mb wide" data-a="menu">Menu</button></div>
   <div class="badge tsl" id="tsBox"><span class="tl">Temps</span><input type="range" id="tsRange" min="20" max="60" step="10" value="40" aria-label="Accélération du temps"><span class="num" id="bSpeed">×40</span></div>
+  <button class="badge" id="helpBtn" type="button" title="Touche ?"><span class="q">?</span>Comment jouer</button>
 </div>
 
 <div id="inst" class="panel">
@@ -274,7 +282,7 @@ body.mob #toast{font-size:22px;top:30%}
 <div id="help" class="panel">
   <span class="x" id="hx">masquer</span>
   <b>← →</b> barre<br>
-  <b>S</b> border, <b>A</b> choquer<br>
+  <b>S A</b> border / choquer<br>
   <b>E</b> réglage auto des voiles<br>
   <b>C</b> courants<br>
   <b>V</b> vue épurée / carte<br>
@@ -283,7 +291,8 @@ body.mob #toast{font-size:22px;top:30%}
   <b>[ ]</b> accélérer le temps<br>
   <b>↑ ↓</b> zoom / dézoom<br>
   <b>R</b> remorquage (+10 min)<br>
-  <b>Espace</b> pause
+  <b>Espace</b> pause<br>
+  <b>?</b> comment jouer
 </div>
 
 <div id="touch">
@@ -311,9 +320,8 @@ body.mob #toast{font-size:22px;top:30%}
       <div class="row"><div class="lab">Direction du vent <span class="wdl" id="wdLab"></span></div><div id="rose"></div></div>
       <div class="row"><div class="lab">Force du vent</div><div class="seg" data-opt="wspd"><button data-v="8">8 nd</button><button data-v="12">12 nd</button><button data-v="16">16 nd</button><button data-v="20">20 nd</button></div></div>
       <div class="row"><div class="lab">Météo</div><div class="seg" data-opt="met"><button data-v="stable">Stable</button><button data-v="evol">Évolutive</button></div></div>
-      <button id="go">Aller sur la ligne (départ dans 1 min)</button>
+      <div class="goRow"><button id="go">Aller sur la ligne (départ dans 1 min)</button><button id="tutoLink" type="button">Comment jouer</button></div>
       <div id="rec"></div>
-      <button id="tutoLink" class="linkBtn" type="button">Comment jouer</button>
       <button id="layoutBtn" class="linkBtn" type="button"></button>
     </div>
     <div id="result">
@@ -1539,16 +1547,21 @@ function renderRecap(tot){
     body.innerHTML='<h2 id="tutoT">'+s.t+'</h2><div class="ts">'+s.s+'</div><ul>'+s.items.map(it=>'<li><span class="ic">'+it[0]+'</span><span>'+it[1]+'</span></li>').join('')+'</ul>';
     dots.innerHTML=st.map((_,k)=>'<i class="'+(k===i?'on':'')+'"></i>').join('');
     prev.disabled=i===0;next.textContent=i===st.length-1?'C\u2019est parti':'Suivant';}
-  function open(){i=0;el.hidden=false;show();next.focus();}
-  function close(){el.hidden=true;try{localStorage.setItem('tim-tuto-seen','1');}catch(e){}document.getElementById('go').focus();}
+  let pausedByTuto=false;
+  function open(){i=0;el.hidden=false;show();next.focus();if(S.running&&!S.paused&&document.getElementById('menu').style.display==='none'){S.paused=true;pausedByTuto=true;}}
+  function close(){el.hidden=true;try{localStorage.setItem('tim-tuto-seen-2','1');}catch(e){}
+    if(pausedByTuto){S.paused=false;pausedByTuto=false;}
+    const go=document.getElementById('go');if(go.offsetParent)go.focus();}
   prev.onclick=()=>{if(i>0){i--;show();}};
   next.onclick=()=>{if(i<2){i++;show();}else close();};
   document.getElementById('tutoClose').onclick=close;
   document.getElementById('tutoLink').onclick=open;
   el.addEventListener('keydown',e=>{if(e.key==='Escape')close();else if(e.key==='ArrowRight')next.click();else if(e.key==='ArrowLeft')prev.click();e.stopPropagation();});
   el.addEventListener('click',e=>{if(e.target===el)close();});
-  let seen=false;try{seen=localStorage.getItem('tim-tuto-seen')==='1';}catch(e){}
+  let seen=false;try{seen=localStorage.getItem('tim-tuto-seen-2')==='1';}catch(e){}
   window.__openTuto=open;if(!seen)setTimeout(open,400);
+  document.getElementById('helpBtn').addEventListener('click',e=>{e.currentTarget.blur();const sh=document.getElementById('badges');if(sh.classList.contains('open')){sh.classList.remove('open');document.getElementById('sheetBtn').setAttribute('aria-expanded','false');}open();});
+  addEventListener('keydown',e=>{if(e.key==='?'&&el.hidden&&document.getElementById('menu').style.display==='none'){e.preventDefault();open();}});
 })();
 loadAll().then(()=>{
   // idle background behind menu
