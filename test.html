@@ -189,6 +189,31 @@ button.badge{font:500 14px var(--sans);color:var(--ink);text-align:left;cursor:p
 .lbList .nm{font-weight:600;overflow:hidden;text-overflow:ellipsis;white-space:nowrap}
 .lbList .tm{font-variant-numeric:tabular-nums;font-weight:600;white-space:nowrap}
 .lbList small{grid-column:2/4;color:var(--ink-soft);font-size:13px}
+.online{margin:16px 0 4px;padding-top:14px;border-top:1px solid var(--line)}
+.online h2,#lobby h2{font-family:var(--cond);font-weight:700;font-size:26px;line-height:1.1;margin:0 0 6px}
+#lobby h2{margin-top:16px}
+.olHint{font-size:14px;color:var(--ink-soft);margin:0 0 10px}
+.olRow{display:flex;flex-wrap:wrap;align-items:center;gap:8px;margin-top:8px}
+#olName,#olCode{font:16px var(--sans);padding:10px 12px;border:1px solid var(--line);border-radius:6px;background:transparent;color:var(--ink)}
+#olName{flex:1 1 150px}
+#olCode{width:6.2em;text-transform:uppercase;letter-spacing:.12em;font-weight:600}
+.olChk{display:flex;align-items:center;gap:6px;font-size:15px;cursor:pointer}
+.olChk input{width:18px;height:18px;accent-color:var(--magenta)}
+.olOr{color:var(--ink-soft);font-size:14px}
+.olBtn{font:600 18px var(--sans);background:var(--magenta);color:#fff;border:0;border-radius:6px;padding:12px 20px;cursor:pointer}
+.olBtn:disabled{opacity:.5;cursor:default}
+.olBtn2{font:600 16px var(--sans);color:var(--ink);background:transparent;border:1px solid var(--ink);border-radius:6px;padding:10px 16px;cursor:pointer}
+.olBtn2:disabled{opacity:.5;cursor:default}
+#olName:focus-visible,#olCode:focus-visible,.olBtn:focus-visible,.olBtn2:focus-visible{outline:2px solid var(--magenta);outline-offset:2px}
+.olCode{display:flex;flex-wrap:wrap;align-items:center;gap:12px}
+.olCode span{font-size:14px;color:var(--ink-soft)}
+.olCode b{font-family:var(--cond);font-size:52px;line-height:1;letter-spacing:.12em}
+.olCond{font-size:14px;color:var(--ink-soft);margin-top:10px}
+#lbyPlayers li{grid-template-columns:1.2em minmax(0,1fr) auto}
+#lbyPlayers i{display:inline-block;width:10px;height:10px;border-radius:50%;margin-top:6px}
+#netTag{position:fixed;left:50%;top:calc(10px + env(safe-area-inset-top,0px));transform:translateX(-50%);z-index:5;display:none;font:600 13px var(--sans);color:var(--ink);background:var(--vellum);border:1px solid var(--line);border-radius:14px;padding:4px 12px;box-shadow:var(--panel-shadow);pointer-events:none;white-space:nowrap}
+body.online #netTag{display:block}
+body.online #tsBox{display:none}
 .menuFoot{margin:18px 0 0;padding-top:12px;border-top:1px solid var(--line);font-size:13px;line-height:1.45;color:var(--ink-soft)}
 .menuFoot a{color:inherit;text-decoration:underline;text-underline-offset:2px;overflow-wrap:anywhere}
 .menuFoot a:hover{color:var(--ink)}
@@ -328,6 +353,7 @@ body.mob #toast{font-size:22px;top:30%}
     <div class="tnav"><button id="tutoPrev" type="button">Précédent</button><div id="tutoDots" aria-hidden="true"></div><button id="tutoNext" type="button">Suivant</button></div>
   </div>
 </div>
+<div id="netTag" aria-live="polite"></div>
 <div id="cdBig" class="num" aria-live="polite"></div>
 
 <div id="menu">
@@ -341,10 +367,24 @@ body.mob #toast{font-size:22px;top:30%}
       <div class="row"><div class="lab">Météo</div><div class="seg" data-opt="met"><button data-v="stable">Stable</button><button data-v="evol">Évolutive</button></div></div>
       <div class="goRow"><button id="go">Aller sur la ligne (départ dans 1 min)</button><button id="tutoLink" type="button">Comment jouer</button></div>
       <div id="rec"></div>
+      <div class="online"><h2>Course en ligne</h2>
+        <p class="olHint">Crée une course et envoie le code à tes amis. Les conditions réglées ci-dessus s’appliquent à la course créée.</p>
+        <div class="olRow"><input id="olName" maxlength="20" placeholder="Ton pseudo" aria-label="Ton pseudo" autocomplete="nickname"><label class="olChk"><input type="checkbox" id="olBots" checked> Avec concurrents virtuels</label></div>
+        <div class="olRow"><button id="olCreate" class="olBtn2" type="button">Créer une course</button><span class="olOr">ou</span><input id="olCode" maxlength="4" placeholder="CODE" aria-label="Code de la course" autocapitalize="characters" autocomplete="off" spellcheck="false"><button id="olJoin" class="olBtn2" type="button">Rejoindre</button></div>
+        <p class="lbMsg" id="olMsg"></p></div>
       <button id="lbOpen" class="linkBtn" type="button" aria-expanded="false">Voir le tableau des temps</button>
       <div id="lbMenuBox" class="lb" hidden><h2>Tableau des temps</h2><p class="lbMsg" id="lbMsg2"></p><ol id="lbList2" class="lbList"></ol></div>
       <button id="layoutBtn" class="linkBtn" type="button"></button>
       <p class="menuFoot">Tout l’univers du nautisme se trouve ici : <a href="https://www.hisse-et-oh.com/sailing" target="_blank" rel="noopener">hisse-et-oh.com/sailing</a></p>
+    </div>
+    <div id="lobby" hidden>
+      <h1>Course en ligne</h1>
+      <div class="olCode"><span>Code</span><b id="lbyCode" class="num"></b><button id="lbyCopy" class="olBtn2" type="button">Copier le lien</button></div>
+      <p class="lbMsg" id="lbyLink"></p>
+      <div id="lbyCond" class="olCond"></div>
+      <h2>Équipages</h2><ol id="lbyPlayers" class="lbList"></ol>
+      <div class="goRow"><button id="lbyGo" class="olBtn" type="button">Lancer le départ</button><button id="lbyQuit" class="olBtn2" type="button">Quitter</button></div>
+      <p class="lbMsg" id="lbyMsg"></p>
     </div>
     <div id="result">
       <h1 id="resTitle">Tour bouclé</h1>
@@ -447,17 +487,18 @@ const MET_SCEN=[
   {id:'grains',label:'passages de grains',spd:0,dir:0,grains:2}];
 function initMeteo(){
   S.met=null;if(OPT.met!=='evol')return;
-  const sc=MET_SCEN[Math.floor(Math.random()*MET_SCEN.length)];
+  const sc=MET_SCEN[Math.floor(hrand(500,0,0)*MET_SCEN.length)];
   S.met=Object.assign({},sc,{t0:S.t,T:9000,todo:[]});
-  for(let i=0;i<(sc.grains||0);i++)S.met.todo.push(S.t+1800+Math.random()*4800);
+  for(let i=0;i<(sc.grains||0);i++)S.met.todo.push(S.t+1800+hrand(501,i,0)*4800);
 }
 function metFactor(t){if(!S.met)return [1,0];const f=Math.max(0,Math.min(1,(t-S.met.t0)/S.met.T)),e=f*f*(3-2*f);return [1+S.met.spd*e,S.met.dir*e];}
 function meteoStep(){
   if(!S.met)return;
   // grain : une grosse risée qui arrive du vent sur la flotte
   while(S.met.todo.length&&S.t>=S.met.todo[0]){S.met.todo.shift();
-    const w=windAt(S.t),a=rad(w.dir);const gx=S.x+Math.sin(a)*520,gy=S.y-Math.cos(a)*520;
-    S.gusts.push({x:gx,y:gy,r:340,amp:.6,lull:false,sh:14,t0:S.t,life:1900,grain:true});
+    if(NET&&NET.cfg&&!NET.host)continue;   // en ligne : l'hôte place le grain et l'envoie aux autres
+    const w=windAt(S.t),a=rad(w.dir);const ref=NET&&NET.cfg?netFleetCenter():{x:S.x,y:S.y};const gx=ref.x+Math.sin(a)*520,gy=ref.y-Math.cos(a)*520;
+    const gr={x:gx,y:gy,r:340,amp:.6,lull:false,sh:14,t0:S.t,life:1900,grain:true};S.gusts.push(gr);if(NET&&NET.cfg)netGrain(gr);
     toast('Grain en approche : rafales et bascule');}
   // le relief déplace le dévent quand le vent tourne
   const d=windAt(S.t).dir;if(Math.abs(angDiff(d,S.siteDir??S.wdir))>6){S.siteDir=d;buildSite();}
@@ -465,19 +506,22 @@ function meteoStep(){
 
 // ---------- surventes (risées) ----------
 const GUST_N=24,LULL_N=16;
-function spawnGust(init,lull){
-  const life=240+Math.random()*420;
-  const amp=lull?-(.22+Math.random()*.25):(.22+Math.random()*.26)*(S.gustK||1);
-  return {x:Math.random()*WW,y:Math.random()*WH,r:90+Math.random()*150,amp,lull:!!lull,sh:(Math.random()-.5)*(lull?8:16),t0:init?S.t-Math.random()*life:S.t,life};
+// hasard reproductible : même graine = mêmes risées et même météo pour tous les joueurs d'une course en ligne
+function hrand(a,b,c){let h=(S.seed|0)^Math.imul(a+1,0x9E3779B1)^Math.imul(b+7,0x85EBCA77)^Math.imul(c+13,0xC2B2AE3D);h^=h>>>16;h=Math.imul(h,0x7feb352d);h^=h>>>15;h=Math.imul(h,0x846ca68b);h^=h>>>16;return (h>>>0)/4294967296;}
+function spawnGust(init,lull,slot,gen,t0){
+  slot=slot||0;gen=gen||0;const R=k=>hrand(slot+(lull?100:0),gen,k);
+  const life=240+R(0)*420;
+  const amp=lull?-(.22+R(1)*.25):(.22+R(1)*.26)*(S.gustK||1);
+  return {x:R(2)*WW,y:R(3)*WH,r:90+R(4)*150,amp,lull:!!lull,sh:(R(5)-.5)*(lull?8:16),t0:init?S.t-R(6)*life:(t0??S.t),life,slot,gen};
 }
 function updateGusts(dt){
   if(!S.gusts)S.gusts=[];
   const w=windAt(S.t);const a=rad(w.dir+180);const v=w.spd*KN*.55/MPP;const vx=Math.sin(a)*v,vy=-Math.cos(a)*v;
-  for(const g of S.gusts){g.x+=vx*dt;g.y+=vy*dt;}
-  S.gusts=S.gusts.filter(g=>S.t-g.t0<g.life);
-  let ng=0,nl=0;for(const g of S.gusts)g.lull?nl++:ng++;
-  while(ng<GUST_N){S.gusts.push(spawnGust(false,false));ng++;}
-  while(nl<LULL_N){S.gusts.push(spawnGust(false,true));nl++;}
+  for(let i=0;i<S.gusts.length;i++){let g=S.gusts[i];g.x+=vx*dt;g.y+=vy*dt;
+    if(S.t-g.t0<g.life)continue;
+    if(g.grain){S.gusts.splice(i,1);i--;continue;}
+    while(S.t-g.t0>=g.life)g=spawnGust(false,g.lull,g.slot,g.gen+1,g.t0+g.life);
+    g.x+=vx*(S.t-g.t0);g.y+=vy*(S.t-g.t0);S.gusts[i]=g;}
 }
 function gustAt(x,y){
   let f=0,sh=0;if(!S.gusts)return [0,0];
@@ -495,7 +539,7 @@ function windAtPos(x,y,t,self){const w=windAt(t);const g=gustAt(x,y);const st=si
 // ---------- dévent des voiles : chaque bateau projette un cône de vent faible sous son vent apparent ----------
 const SH_L=75,SH_MAX=.38,SH_TAN=Math.tan(14*Math.PI/180);
 function shadowAt(x,y,self){
-  let best=0;const list=[S.shP].concat(S.bots||[]);
+  let best=0;const list=[S.shP].concat(S.bots||[],NET?NET.boats:[]);
   for(const b of list){
     if(!b||b===self||!b.shx||b.fin!=null)continue;
     const dx=x-b.x,dy=y-b.y;if(dx*dx+dy*dy>SH_L*SH_L)continue;
@@ -531,7 +575,7 @@ addEventListener('keydown',e=>{
   else if(e.key==='ArrowDown'){S.zoom=Math.max(.3,S.zoom/1.12);}
   else if(k==='+'||k==='='){S.zoom=Math.min(5,S.zoom*1.25);}
   else if(k==='-'||k==='_'){S.zoom=Math.max(.3,S.zoom/1.25);}
-  else if(k===' '){S.paused=!S.paused;toast(S.paused?'Pause':'Reprise');e.preventDefault();}
+  else if(k===' '){e.preventDefault();if(NET&&NET.cfg)toast('Pas de pause en course en ligne');else{S.paused=!S.paused;toast(S.paused?'Pause':'Reprise');}}
   else if(k==='r'){tow();}
   else if(k==='escape'){showMenu();}
   if(['ArrowUp','ArrowDown','ArrowLeft','ArrowRight',' '].includes(e.key))e.preventDefault();
@@ -639,9 +683,218 @@ function lbPrepare(tot,rank){
   });
 })();
 
-function showMenu(){S.running=false;document.getElementById('menu').style.display='flex';document.getElementById('setup').style.display='block';document.getElementById('result').style.display='none';showRecord();}
+// ---------- course en ligne : salon privé avec code (Firebase Realtime Database, API REST + flux en direct) ----------
+const NET_DB=window.TIM_DB||'https://tour-de-l-iam-default-rtdb.europe-west1.firebasedatabase.app';
+const NET_LEAD=4000,NET_MAX=6,NET_TS=40;
+const HUM_COLS=['#d6336c','#c9a227','#0b7285','#5c677d','#a61e4d','#2b8a3e'];
+let NET=null;
+const NET_UID=Math.random().toString(36).slice(2,10);
+function netReq(method,path,body){
+  return fetch(NET_DB+'/salons/'+path+'.json',{method,headers:{'Content-Type':'application/json'},body:body===undefined?undefined:JSON.stringify(body)})
+    .then(r=>{if(!r.ok)throw new Error('http '+r.status);return r.json();});
+}
+const SV={'.sv':'timestamp'};
+function netNow(){return Date.now()+(NET&&NET.off||0);}
+function netName(){const v=document.getElementById('olName').value.replace(/\s+/g,' ').trim().slice(0,20);if(v)try{localStorage.setItem('tim-pseudo',v);}catch(e){}return v;}
+function netMsg(id,t){document.getElementById(id).textContent=t;}
+function netActive(){const p=(NET&&NET.data.players)||{},now=netNow();return Object.keys(p).filter(id=>p[id]&&(id===NET.uid||!p[id].hb||now-p[id].hb<15000)).sort((a,b)=>(p[a].j||0)-(p[b].j||0)||(a<b?-1:1));}
+function netOrder(){return (NET&&NET.data.order)||netActive();}
+function netColOf(id){const o=netOrder(),i=o.indexOf(id);return HUM_COLS[(i<0?o.length:i)%HUM_COLS.length];}
+function netCondText(c){
+  const wd=LB_WD[Math.round(((c.wdir%360)+360)%360/45)%8],st=+c.start;
+  return 'Coef '+c.coef+' · départ '+(st===0?'à PM':'PM '+(st>0?'+':'−')+Math.abs(st)+' h')+' · vent '+wd+(c.wdirRnd?' (tiré au hasard)':'')+' '+c.wspd+' nd · météo '+(c.met==='evol'?'évolutive':'stable')+' · '+(c.bots?'avec':'sans')+' concurrents virtuels · temps ×'+NET_TS;
+}
+async function netClock(){
+  try{const t0=Date.now();const v=await netReq('PUT',NET.code+'/players/'+NET.uid+'/hb',SV);const t1=Date.now();if(typeof v==='number'&&NET)NET.off=v-(t0+t1)/2;}catch(e){}
+}
+async function netCreate(){
+  const name=netName();if(!name){netMsg('olMsg','Indique ton pseudo.');document.getElementById('olName').focus();return;}
+  const btn=document.getElementById('olCreate');btn.disabled=true;netMsg('olMsg','Création de la course…');
+  try{
+    const L='ABCDEFGHJKMNPQRSTUVWXYZ';let code='';
+    for(let k=0;k<6;k++){code='';for(let i=0;i<4;i++)code+=L[Math.floor(Math.random()*L.length)];if(!(await netReq('GET',code+'/state')))break;}
+    const cfg={coef:+OPT.coef,start:+OPT.start,wdir:OPT.wdir==='rnd'?Math.round(Math.random()*16)*22.5:+OPT.wdir,wdirRnd:OPT.wdir==='rnd',wspd:+OPT.wspd,met:OPT.met,
+      bots:document.getElementById('olBots').checked,seed:(Math.random()*2147483647)|0};
+    await netReq('PUT',code,{cfg,host:NET_UID,state:'lobby',created:SV,players:{[NET_UID]:{n:name,j:SV,hb:SV}}});
+    netMsg('olMsg','');netOpen(code);
+  }catch(e){netMsg('olMsg','Connexion impossible. Vérifie ta connexion internet.');}
+  btn.disabled=false;
+}
+async function netJoin(){
+  const name=netName();if(!name){netMsg('olMsg','Indique ton pseudo.');document.getElementById('olName').focus();return;}
+  const code=document.getElementById('olCode').value.trim().toUpperCase();
+  if(!/^[A-Z]{4}$/.test(code)){netMsg('olMsg','Le code fait 4 lettres.');document.getElementById('olCode').focus();return;}
+  const btn=document.getElementById('olJoin');btn.disabled=true;netMsg('olMsg','Connexion…');
+  try{
+    const room=await netReq('GET',code);
+    if(!room||!room.cfg)netMsg('olMsg','Aucune course avec ce code.');
+    else if(room.state!=='lobby')netMsg('olMsg','Cette course est déjà partie.');
+    else{
+      const p=room.players||{},now=Date.now();const n=Object.keys(p).filter(id=>p[id]&&(!p[id].hb||Math.abs(now-p[id].hb)<20000)).length;
+      if(n>=NET_MAX)netMsg('olMsg','Course complète ('+NET_MAX+' joueurs maximum).');
+      else{await netReq('PUT',code+'/players/'+NET_UID,{n:name,j:SV,hb:SV});netMsg('olMsg','');netOpen(code);}
+    }
+  }catch(e){netMsg('olMsg','Connexion impossible. Vérifie ta connexion internet.');}
+  btn.disabled=false;
+}
+function netOpen(code){
+  NET={code,uid:NET_UID,host:false,data:{},rem:{},boats:[],all:[],off:0,cfg:null,grains:new Set(),optBak:Object.assign({},OPT)};
+  try{history.replaceState(null,'','#'+code);}catch(e){}
+  const es=new EventSource(NET_DB+'/salons/'+code+'.json');NET.es=es;
+  const on=(ev,patch)=>es.addEventListener(ev,e=>{if(!NET||NET.es!==es)return;let m;try{m=JSON.parse(e.data);}catch(x){return;}if(!m)return;netApply(m.path,m.data,patch);});
+  on('put',false);on('patch',true);
+  es.addEventListener('cancel',()=>{if(NET&&NET.es===es)netMsg('lbyMsg','Connexion refusée par le serveur.');});
+  netClock();
+  document.getElementById('setup').style.display='none';document.getElementById('result').style.display='none';document.getElementById('lobby').hidden=false;
+  document.getElementById('lbyCode').textContent=code;
+  netMsg('lbyLink',location.href.split('#')[0]+'#'+code);
+  netRenderLobby();
+}
+function netApply(path,data,patch){
+  const parts=path.split('/').filter(Boolean);
+  if(patch&&data&&typeof data==='object'){for(const k in data)netSet(parts.concat(k.split('/').filter(Boolean)),data[k]);}
+  else netSet(parts,data);
+  netOnData();
+}
+function netSet(parts,v){
+  if(!parts.length){NET.data=(v&&typeof v==='object')?v:{};return;}
+  let o=NET.data;for(let i=0;i<parts.length-1;i++){if(typeof o[parts[i]]!=='object'||o[parts[i]]===null)o[parts[i]]={};o=o[parts[i]];}
+  const k=parts[parts.length-1];if(v===null)delete o[k];else o[k]=v;
+}
+function netOnData(){
+  const d=NET.data;
+  if(!NET.cfg){
+    NET.host=d.host===NET.uid;
+    // l'hôte est parti avant le départ : le premier arrivé encore présent prend le relais
+    if(d.state==='lobby'&&d.host&&!(d.players||{})[d.host]){const a=netActive();if(a[0]===NET.uid)netReq('PATCH',NET.code,{host:NET.uid}).catch(()=>{});}
+    if(d.state==='race'&&d.t0&&d.cfg){netStart();return;}
+    netRenderLobby();return;
+  }
+  if(!NET.host&&d.grains&&S.gusts){for(const id in d.grains){if(NET.grains.has(id))continue;NET.grains.add(id);const g=d.grains[id];
+    S.gusts.push({x:g.x,y:g.y,r:340,amp:.6,lull:false,sh:14,t0:g.t0,life:1900,grain:true});if(S.running)toast('Grain en approche : rafales et bascule');}}
+  if(S.finished&&document.getElementById('result').style.display==='block'){if(!NET.rT)NET.rT=setTimeout(()=>{if(NET){NET.rT=0;netResults();}},800);}
+}
+function netRenderLobby(){
+  if(!NET||NET.cfg)return;const d=NET.data,c=d.cfg;
+  if(c)netMsg('lbyCond',netCondText(c));
+  const ol=document.getElementById('lbyPlayers');ol.textContent='';const a=netActive(),p=d.players||{};
+  a.forEach(id=>{const li=document.createElement('li');if(id===NET.uid)li.className='me';const i=document.createElement('i');i.style.background=id===NET.uid?'#e2583e':netColOf(id);
+    const nm=document.createElement('span');nm.className='nm';nm.textContent=(p[id].n||'?');const tg=document.createElement('span');tg.className='tm';
+    tg.textContent=[id===d.host?'organisateur':'',id===NET.uid?'toi':''].filter(Boolean).join(' · ');li.append(i,nm,tg);ol.appendChild(li);});
+  const go=document.getElementById('lbyGo');go.hidden=!NET.host;
+  netMsg('lbyMsg',d.state==='lobby'?(NET.host?(a.length<2?'Envoie le lien ou le code à tes amis, puis lance le départ quand tout le monde est là.':'Tout le monde est là ? Lance le départ.'):'En attente du départ, lancé par '+((p[d.host]||{}).n||'l’organisateur')+'.'):'');
+}
+async function netGo(){
+  if(!NET||!NET.host)return;const b=document.getElementById('lbyGo');b.disabled=true;
+  try{await netReq('PATCH',NET.code,{state:'race',t0:SV,order:netActive()});}catch(e){netMsg('lbyMsg','Envoi impossible, réessaie.');}
+  b.disabled=false;
+}
+function netStart(){
+  const d=NET.data;NET.cfg=d.cfg;NET.t0=d.t0;NET.host=d.host===NET.uid;
+  OPT.coef=String(d.cfg.coef);OPT.start=String(d.cfg.start);OPT.wdir=String(d.cfg.wdir);OPT.wspd=String(d.cfg.wspd);OPT.met=d.cfg.met;
+  document.body.classList.add('online');document.getElementById('lobby').hidden=true;document.getElementById('setup').style.display='block';
+  newGame();toast('Tout le monde sur l’eau ! Le compte à rebours démarre dans quelques secondes.');
+}
+function netNewGame(){
+  if(!NET.cfg.bots)S.bots=[];
+  S.tsUser=NET_TS;
+  const o=netOrder(),k=Math.max(0,o.indexOf(NET.uid));S.x=925+k*42;S.y=968;S.camX=S.x;S.camY=S.y;
+  NET.rem={};NET.boats=[];NET.all=[];NET.grains=new Set();NET.sendT=0;
+}
+function netSimTarget(){const e=(netNow()-NET.t0-NET_LEAD)/1000;if(e<=0)return 0;return e<CD_REAL?e*PRE_TS:CD_REAL*PRE_TS+(e-CD_REAL)*NET_TS;}
+function netWaiting(){return netNow()<NET.t0+NET_LEAD;}
+function netDtSim(){return Math.max(0,Math.min(60,netSimTarget()-S.t));}
+function netFleetCenter(){
+  const L=[{x:S.x,y:S.y,fin:S.finished?1:null}].concat(NET.boats,S.bots||[]).filter(b=>b.fin==null);
+  if(!L.length)return {x:S.x,y:S.y};let x=0,y=0;for(const b of L){x+=b.x;y+=b.y;}return {x:x/L.length,y:y/L.length};
+}
+function netGrain(g){netReq('PATCH',NET.code,{['grains/g'+Math.round(g.t0)]:{x:Math.round(g.x),y:Math.round(g.y),t0:Math.round(g.t0)}}).catch(()=>{});}
+const r1=v=>Math.round(v*10)/10;
+function netSend(force){
+  if(!NET||!NET.cfg||(NET.busy&&!force))return;
+  const me={x:r1(S.x),y:r1(S.y),h:r1(S.hdg),v:Math.round(S.stw*100)/100,a:Math.round(IN.awa||0),s:Math.round(S.sheet||0),o:Math.round(IN.opt||0),
+    p:S.pen?1:0,st:S.started?1:0,w:Math.round((S.wind||0)*1000)/1000,f:S.finished&&S.myFin!=null?Math.round(S.myFin):-1,t:r1(S.t)};
+  const body={['pos/'+NET.uid]:me};
+  if(NET.host&&S.bots&&S.bots.length){body.bt=r1(S.t);body.bots=S.bots.map(b=>[r1(b.x),r1(b.y),r1(b.hdg),Math.round(b.stw*100)/100,Math.round(b.awa||0),Math.round(b.sheet||0),Math.round(b.opt||0),
+    b.pen?1:0,b.started?1:0,Math.round((b.wind||0)*1000)/1000,b.fin!=null?Math.round(b.fin):-1,b.anchored?1:0]);}
+  NET.busy=true;netReq('PATCH',NET.code,body).catch(()=>{}).finally(()=>{if(NET)NET.busy=false;});
+}
+function netFollow(b,x,y,h,v,t,still){
+  // position estimée à l'instant S.t (les horloges des joueurs sont synchronisées), puis lissage
+  let tx=x,ty=y;
+  if(!still){const dt=Math.max(0,Math.min(20,S.t-t));if(dt>0){const c=curAt(x,y,S.t);tx+=(v*Math.sin(rad(h))+c[0])*KN*dt/MPP;ty+=(-v*Math.cos(rad(h))+c[1])*KN*dt/MPP;}}
+  if(b.x==null||Math.hypot(tx-b.x,ty-b.y)>40){b.x=tx;b.y=ty;b.hdg=h;}
+  else{b.x+=(tx-b.x)*.25;b.y+=(ty-b.y)*.25;b.hdg=(b.hdg+angDiff(h,b.hdg)*.3+360)%360;}
+  const w=windAt(S.t),tw=rad(w.dir+180),wx=w.spd*Math.sin(tw)-v*Math.sin(rad(b.hdg)),wy=-w.spd*Math.cos(tw)+v*Math.cos(rad(b.hdg)),n=Math.hypot(wx,wy);if(n>.5){b.shx=wx/n;b.shy=wy/n;}
+  if(b.started&&(!b.trkT||S.t-b.trkT>12)){(b.trk=b.trk||[]).push([b.x,b.y]);b.trkT=S.t;}
+}
+function netUpdateBoats(){
+  const pos=NET.data.pos||{},pl=NET.data.players||{};const seen=new Set();
+  for(const id in pos){
+    if(id===NET.uid)continue;const p=pos[id];if(!p||typeof p.x!=='number')continue;seen.add(id);
+    let b=NET.rem[id];if(!b){b=NET.rem[id]={isR:true,key:'r:'+id,x:null,y:null,hdg:p.h};}
+    b.name=(pl[id]&&pl[id].n)||b.name||'?';b.col=netColOf(id);
+    b.stw=p.v;b.awa=p.a;b.sheet=p.s;b.opt=p.o;b.pen=p.p?(b.pen||{}):null;b.started=!!p.st;b.wind=p.w||0;b.fin=p.f>=0?p.f:null;
+    b.pr=b.fin!=null?1:(b.started?Math.min(1,Math.abs(b.wind)/(2*Math.PI)):0);
+    b.gone=b.fin==null&&S.running&&S.t-p.t>240;   // plus de nouvelles depuis ~6 s : connexion perdue
+    netFollow(b,p.x,p.y,p.h,p.v,p.t,b.fin!=null);
+  }
+  for(const id in NET.rem)if(!seen.has(id)){if(S.running)toast((NET.rem[id].name||'Un joueur')+' a quitté la course');delete NET.rem[id];}
+  NET.all=Object.values(NET.rem);NET.boats=NET.all.filter(b=>!b.gone);
+}
+function netUpdateBots(){
+  const arr=NET.data.bots;if(!arr||!S.bots)return;const bt=NET.data.bt||S.t;
+  for(let i=0;i<S.bots.length;i++){const q=arr[i],b=S.bots[i];if(!q)continue;
+    b.stw=q[3]||0;b.awa=q[4]||0;b.sheet=q[5]||0;b.opt=q[6]||0;b.pen=q[7]?(b.pen||{}):null;b.started=!!q[8];b.wind=q[9]||0;b.fin=q[10]>=0?q[10]:null;b.anchored=!!q[11];
+    netFollow(b,q[0],q[1],q[2],b.stw,bt,b.fin!=null||b.anchored);}
+}
+function netHostBots(dtReal){
+  // l'hôte a fini : il continue de faire naviguer les concurrents virtuels pour les autres
+  let dt=Math.max(0,Math.min(60,netSimTarget()-S.t));if(dt<=0)return;const n=Math.max(1,Math.ceil(dt));const h=dt/n,hi=Math.min(dt,dtReal*15)/n;
+  for(let i=0;i<n;i++){meteoStep();updateGusts(h);stepBots(h,hi);fleetCollide();S.t+=h;}
+}
+function netResults(){
+  if(!NET||!S.finished)return;botsResults(S.myFin);const rk=fleetRank();
+  document.getElementById('resTitle').textContent=(rk[0]===1?'Victoire':'Arrivé '+rk[0]+'e')+' sur '+rk[1];
+}
+function netTick(dt){
+  const now=performance.now();
+  if(now-(NET.hbT||0)>4000){NET.hbT=now;netReq('PATCH',NET.code+'/players/'+NET.uid,{hb:SV}).catch(()=>{});if(!NET.cfg)netRenderLobby();}
+  if(!NET.cfg)return;
+  if(NET.host&&S.finished&&S.bots&&S.bots.some(b=>b.fin==null))netHostBots(dt);
+  netUpdateBoats();
+  if(!NET.host)netUpdateBots();
+  const per=S.finished&&!NET.host?1000:200;if(now-(NET.sendT||0)>per){NET.sendT=now;netSend();}
+  if(now-(NET.tagT||0)>1000){NET.tagT=now;const n=1+NET.boats.length;
+    document.getElementById('netTag').textContent='En ligne · '+NET.code+' · '+n+' joueur'+(n>1?'s':'')+(netWaiting()?' · départ dans '+Math.ceil((NET.t0+NET_LEAD-netNow())/1000)+' s':'');}
+}
+function netLeave(){
+  if(!NET)return;const n=NET;NET=null;clearTimeout(n.rT);
+  try{n.es&&n.es.close();}catch(e){}
+  try{fetch(NET_DB+'/salons/'+n.code+'.json',{method:'PATCH',headers:{'Content-Type':'application/json'},body:JSON.stringify({['players/'+n.uid]:null,['pos/'+n.uid]:null}),keepalive:true}).catch(()=>{});}catch(e){}
+  Object.assign(OPT,n.optBak);document.body.classList.remove('online');document.getElementById('lobby').hidden=true;
+  try{history.replaceState(null,'',location.href.split('#')[0]);}catch(e){}
+}
+(function(){
+  const nm=document.getElementById('olName'),cd=document.getElementById('olCode');
+  try{nm.value=localStorage.getItem('tim-pseudo')||'';}catch(e){}
+  [nm,cd].forEach(el=>el.addEventListener('keydown',e=>{e.stopPropagation();if(e.key==='Enter'){e.preventDefault();(el===cd||cd.value.trim()?netJoin:netCreate)();}}));
+  cd.addEventListener('input',()=>{cd.value=cd.value.toUpperCase().replace(/[^A-Z]/g,'');});
+  document.getElementById('olCreate').addEventListener('click',netCreate);
+  document.getElementById('olJoin').addEventListener('click',netJoin);
+  document.getElementById('lbyGo').addEventListener('click',netGo);
+  document.getElementById('lbyQuit').addEventListener('click',()=>{netLeave();showMenu();});
+  document.getElementById('lbyCopy').addEventListener('click',async()=>{if(!NET)return;const url=location.href.split('#')[0]+'#'+NET.code;
+    try{await navigator.clipboard.writeText(url);netMsg('lbyMsg','Lien copié : colle-le dans un message à tes amis.');}catch(e){netMsg('lbyMsg','Copie impossible : sélectionne le lien ci-dessus.');}});
+  addEventListener('pagehide',()=>{if(NET)netLeave();});
+  const h=(location.hash||'').slice(1).toUpperCase();
+  if(/^[A-Z]{4}$/.test(h)){cd.value=h;netMsg('olMsg','Tu as été invité à la course '+h+'. Entre ton pseudo puis clique sur Rejoindre.');setTimeout(()=>{(nm.value?document.getElementById('olJoin'):nm).scrollIntoView({block:'center'});},300);}
+})();
+
+function showMenu(){if(NET)netLeave();S.running=false;document.getElementById('menu').style.display='flex';document.getElementById('setup').style.display='block';document.getElementById('result').style.display='none';showRecord();}
 
 function newGame(){
+  S.seed=NET&&NET.cfg?NET.cfg.seed:(Math.random()*2147483647)|0;
   S.coef=+OPT.coef;S.tOff=+OPT.start*3600;
   S.gustK=1;
   S.wdir=OPT.wdir==='rnd'?Math.round(Math.random()*16)*22.5:+OPT.wdir;S.wspd=+OPT.wspd;S.siteDir=S.wdir;buildSite();S.tacI=null;
@@ -649,7 +902,8 @@ function newGame(){
   const w=windAt(0);let h=90;   // départ : le long de la ligne, à environ 180 m au nord
   S.hdg=h;S.sheet=interp(TRIM_A,TRIM_B,Math.abs(angDiff(w.dir,h)));
   S.started=false;S.tStart=0;S.wind=0;S.prevAng=null;S.penalty=0;S.finished=false;
-  S.track=[];S.trackT=0;S.grounded=false;S.zoom=S.zoom||(MOB?2:2.6);S.showCur=S.showCur??true;S.showTac=S.showTac??true;S.showWind=S.showWind??true;S.gusts=[];S.chart=false;S.shoal=S.shoal??false;S.auto=true;clearWake();initBots();S.phase='pre';S.tsUser=S.tsUser??40;S.ts=PRE_TS;S.preEnd=S.t+CD_REAL*PRE_TS;S.signalT=null;S.needReturn=false;S.pen=null;S.myFin=null;S.cdShown=-1;for(let i=0;i<GUST_N;i++)S.gusts.push(spawnGust(true,false));for(let i=0;i<LULL_N;i++)S.gusts.push(spawnGust(true,true));initMeteo();
+  S.track=[];S.trackT=0;S.grounded=false;S.zoom=S.zoom||(MOB?2:2.6);S.showCur=S.showCur??true;S.showTac=S.showTac??true;S.showWind=S.showWind??true;S.gusts=[];S.chart=false;S.shoal=S.shoal??false;S.auto=true;clearWake();initBots();S.phase='pre';S.tsUser=S.tsUser??40;S.ts=PRE_TS;S.preEnd=S.t+CD_REAL*PRE_TS;S.signalT=null;S.needReturn=false;S.pen=null;S.myFin=null;S.cdShown=-1;for(let i=0;i<GUST_N;i++)S.gusts.push(spawnGust(true,false,i,0));for(let i=0;i<LULL_N;i++)S.gusts.push(spawnGust(true,true,i,0));initMeteo();
+  if(NET&&NET.cfg)netNewGame();
   S.lastDryH=-99;S.lastDryDraft=0;S.paused=false;S.awaPrev=null;
   S.camX=S.x;S.camY=S.y;S.running=true;S.cfg=cfgKey();
   document.getElementById('menu').style.display='none';
@@ -677,6 +931,7 @@ function segInt(p1,p2,a,b){
 }
 let IN={stw:0,sog:0,cog:0,twa:0,awa:0,tws:0,twd:0,cur:[0,0],dep:0,opt:0,trimD:0};
 function step(dtReal){
+  if(NET&&NET.cfg&&netWaiting())return;
   meteoStep();
   if(S.phase==='pre'){S.ts=PRE_TS;if(S.t>=S.preEnd)onSignal();}
   const scale=S.ts;
@@ -696,7 +951,7 @@ function step(dtReal){
   S.shS=S.shS||0;S.shS+=(shIn-S.shS)*(1-Math.exp(-dtReal/0.18));
   S.sheet=Math.max(0,Math.min(88,S.sheet+S.shS*30*dtReal));
   // keel animation
-  let dtSim=dtReal*scale;
+  let dtSim=NET&&NET.cfg?netDtSim():dtReal*scale;
   const n=Math.max(1,Math.ceil(dtSim/1.0));const h=dtSim/n;
   const hi=Math.min(dtSim,dtReal*15)/n;
   for(let i=0;i<n;i++)simStep(h,rud,hi);
@@ -751,7 +1006,7 @@ function simStep(dt,rud,di){
   const ang=Math.atan2(S.y-CENTER.y,S.x-CENTER.x);
   if(S.prevAng!==null&&S.started){let da=ang-S.prevAng;if(da>Math.PI)da-=2*Math.PI;if(da<-Math.PI)da+=2*Math.PI;S.wind+=da;}
   S.prevAng=ang;
-  emitWake(dt);advectWake(dt);stepBots(dt,di);fleetCollide();
+  emitWake(dt);advectWake(dt);if(!NET||!NET.cfg||NET.host)stepBots(dt,di);fleetCollide();
   S.t+=dt;
   // track
   if(S.t-S.trackT>6){S.track.push([S.x,S.y]);S.trackT=S.t;if(S.track.length>4000)S.track.shift();}
@@ -766,7 +1021,7 @@ function lineCheck(p1,p2){
 }
 function finish(){
   S.finished=true;S.running=false;
-  const tot=S.t-S.signalT+S.penalty;S.myFin=tot;const k=S.cfg;const prev=getRecs()[k];
+  const tot=S.t-S.signalT+S.penalty;S.myFin=tot;if(NET&&NET.cfg)netSend(true);const k=S.cfg;const prev=getRecs()[k];
   const isRec=!prev||tot<prev;if(isRec)setRec(k,tot);
   document.getElementById('resTime').textContent=fmt(tot);botsResults(tot);S.track.push([S.x,S.y]);renderRecap(tot);
   const rk=fleetRank();lbPrepare(tot,rk[0]);document.getElementById('resTitle').textContent=(rk[0]===1?'Victoire':'Arrivé '+rk[0]+'e')+' sur '+rk[1];
@@ -1180,7 +1435,9 @@ function drawMini(){
 let last=performance.now();
 function loop(now){
   let dt=Math.min(0.05,(now-last)/1000);last=now;
+  if(NET)netTick(dt);
   if(S.running){
+    if(NET&&NET.cfg)S.paused=false;
     if(!S.paused)step(dt);
     render();
     hudT+=dt;if(hudT>0.1){hudT=0;hud();}
@@ -1198,7 +1455,7 @@ function loop(now){
     const a=b.dataset.a;
     if(a==='zin')S.zoom=Math.min(5,S.zoom*1.25);else if(a==='zout')S.zoom=Math.max(.3,S.zoom/1.25);
     else if(a==='tup')tsAdj(10);else if(a==='tdn')tsAdj(-10);
-    else if(a==='pause'){S.paused=!S.paused;toast(S.paused?'Pause':'Reprise');}
+    else if(a==='pause'){if(NET&&NET.cfg)toast('Pas de pause en course en ligne');else{S.paused=!S.paused;toast(S.paused?'Pause':'Reprise');}}
     else if(a==='tow')tow();
     else if(a==='menu'){sheet.classList.remove('open');sb.setAttribute('aria-expanded','false');showMenu();}
     hud();
@@ -1216,7 +1473,7 @@ function loop(now){
   document.addEventListener('gesturestart',e=>e.preventDefault());
 }
 document.getElementById('tsRange').addEventListener('input',e=>{if(S.phase==='pre')S.tsUser=+e.target.value;else S.ts=+e.target.value;hud();});
-function tsAdj(d){if(S.phase==='pre')S.tsUser=Math.max(20,Math.min(60,(S.tsUser||40)+d));else S.ts=Math.max(20,Math.min(60,S.ts+d));}
+function tsAdj(d){if(NET&&NET.cfg)return;if(S.phase==='pre')S.tsUser=Math.max(20,Math.min(60,(S.tsUser||40)+d));else S.ts=Math.max(20,Math.min(60,S.ts+d));}
 document.getElementById('tsRange').addEventListener('change',e=>e.target.blur());
 document.getElementById('layoutBtn').addEventListener('click',()=>setLayout(!MOB));
 setLayout(MOB);
@@ -1284,24 +1541,33 @@ function keepClear(A,B){
 function circles(b){const f=[Math.sin(rad(b.hdg)),-Math.cos(rad(b.hdg))];return COLO.map(o=>[b.x+f[0]*o,b.y+f[1]*o]);}
 const _contacts={};
 function fleetCollide(){
-  const P={x:S.x,y:S.y,hdg:S.hdg,stw:S.stw,isP:true,name:'Toi',pen:S.pen};
-  const F=[P].concat(S.bots||[]);
+  const P={x:S.x,y:S.y,hdg:S.hdg,stw:S.stw,isP:true,name:'Toi',pen:S.pen,fin:S.finished?1:null};
+  const F=[P].concat(S.bots||[],NET?NET.boats:[]);
+  // en ligne, chacun ne déplace que ce qu'il pilote : son bateau, et les concurrents virtuels chez l'hôte
+  const mov=b=>b.isP||(!b.isR&&(!NET||!NET.cfg||NET.host));
   for(let i=0;i<F.length;i++)for(let j=i+1;j<F.length;j++){
     const A=F[i],B=F[j];if(A.fin!=null||B.fin!=null)continue;
+    const mA=mov(A),mB=mov(B);if(!mA&&!mB)continue;
     if(Math.abs(A.x-B.x)>HL*3||Math.abs(A.y-B.y)>HL*3)continue;
     const ca=circles(A),cb=circles(B);let best=null;
     for(const p of ca)for(const q of cb){const dx=q[0]-p[0],dy=q[1]-p[1],d=Math.hypot(dx,dy);if(d<2*COLR&&(!best||d<best.d))best={d,dx,dy};}
-    const key=A.name+'|'+B.name;
+    const key=(A.key||A.name)+'|'+(B.key||B.name);
     if(!best){if(_contacts[key]&&S.t-_contacts[key]>4)delete _contacts[key];continue;}
     const n=best.d>1e-6?[best.dx/best.d,best.dy/best.d]:[1,0],push=(2*COLR-best.d)/2+.05;
-    A.x-=n[0]*push;A.y-=n[1]*push;B.x+=n[0]*push;B.y+=n[1]*push;
-    A.stw*=.55;B.stw*=.55;
+    const pa=mA?(mB?push:2*push):0,pb=mB?(mA?push:2*push):0;
+    A.x-=n[0]*pa;A.y-=n[1]*pa;B.x+=n[0]*pb;B.y+=n[1]*pb;
+    if(mA)A.stw*=.55;if(mB)B.stw*=.55;
     if(!_contacts[key]){
-      const r=keepClear(A,B);
-      if(r.kc&&!A.isP&&!B.isP){r.kc.timePen=(r.kc.timePen||0)+30;}   // entre concurrents : pénalité en temps, pas de 360° au milieu de la passe
-      else if(r.kc&&!r.kc.pen){r.kc.pen={sum:0,last:r.kc.hdg,t0:S.t};
-        if(r.kc.isP){S.pen=r.kc.pen;toast('Contact avec '+B.name+' : tour de pénalité');S.penWhy=r.why;}
-        else if(A.isP||B.isP){toast('Contact : '+r.kc.name+' doit faire un tour de pénalité');}}
+      const r=keepClear(A,B),kc=r.kc,other=kc===A?B:A;
+      if(kc){
+        if(kc.isP){if(!S.pen){S.pen={sum:0,last:S.hdg,t0:S.t};P.pen=S.pen;toast('Contact avec '+other.name+' : tour de pénalité');S.penWhy=r.why;}}
+        else if(kc.isR){if(other.isP)toast('Contact : '+kc.name+' doit faire un tour de pénalité');}
+        else if(!NET||!NET.cfg||NET.host){
+          if(other.isP&&!kc.pen){kc.pen={sum:0,last:kc.hdg,t0:S.t};toast('Contact : '+kc.name+' doit faire un tour de pénalité');}
+          else if(!other.isP)kc.timePen=(kc.timePen||0)+30;   // entre concurrents : pénalité en temps, pas de 360° au milieu de la passe
+        }
+        else if(other.isP)toast('Contact : '+kc.name+' doit faire un tour de pénalité');
+      }
     }
     _contacts[key]=S.t;
   }
@@ -1336,7 +1602,7 @@ function boatLine(b,p1,p2,onStart,onFinish){
 // --- pilotage des concurrents ---
 function stepBots(dt,di){
   if(!S.bots)return;
-  const fleet=[{x:S.x,y:S.y,hdg:S.hdg,stw:S.stw,isP:true}].concat(S.bots);
+  const fleet=[{x:S.x,y:S.y,hdg:S.hdg,stw:S.stw,isP:true}].concat(S.bots,NET?NET.boats:[]);
   for(const b of S.bots){
     if(b.fin!=null)continue;
     const t=S.t,w=windAtPos(b.x,b.y,t,b);
@@ -1440,12 +1706,14 @@ function stepBots(dt,di){
 }
 function botProgress(b){return b.fin!=null?1:(b.started?Math.min(1,Math.abs(b.wind)/(2*Math.PI)):0);}
 function drawBots(toS){
-  if(!S.bots)return;
-  for(const b of S.bots){const q=toS(b.x,b.y);drawAnyBoat(q[0],q[1],b);}
+  for(const b of (S.bots||[])){const q=toS(b.x,b.y);drawAnyBoat(q[0],q[1],b);}
+  if(NET)for(const b of NET.boats){const q=toS(b.x,b.y);drawAnyBoat(q[0],q[1],b);
+    ctx.save();ctx.font='600 13px Barlow,system-ui,sans-serif';ctx.textAlign='center';ctx.lineJoin='round';ctx.lineWidth=3.5;ctx.strokeStyle='rgba(255,255,255,.9)';
+    const ty=q[1]-Math.max(16,HL*S.zoom*1.5)-6;ctx.strokeText(b.name,q[0],ty);ctx.fillStyle='#26374a';ctx.fillText(b.name,q[0],ty);ctx.restore();}
 }
 function fleetRank(){
   const me={fin:S.finished?S.myFin:null,pr:S.started?Math.min(1,Math.abs(S.wind)/(2*Math.PI)):0,me:true};
-  const all=[me].concat((S.bots||[]).map(b=>({fin:b.fin,pr:botProgress(b)})));
+  const all=[me].concat((S.bots||[]).map(b=>({fin:b.fin,pr:botProgress(b)})),NET?NET.all.map(b=>({fin:b.fin,pr:b.pr})):[]);
   all.sort((a,b)=>(a.fin??1e12)-(b.fin??1e12)||b.pr-a.pr);
   return [all.indexOf(me)+1,all.length];
 }
@@ -1459,7 +1727,7 @@ function botsHud(){
 }
 function botsResults(myTime){
   const el=document.getElementById('resBots');if(!el)return;el.textContent='';
-  const rows=[{name:'Toi',t:myTime,me:true,pr:1,col:'#e2583e'}].concat((S.bots||[]).map(b=>({name:b.name,t:b.fin,pr:botProgress(b),col:b.col})));
+  const rows=[{name:'Toi',t:myTime,me:true,pr:1,col:'#e2583e'}].concat((S.bots||[]).map(b=>({name:b.name,t:b.fin,pr:botProgress(b),col:b.col})),NET?NET.all.map(b=>({name:b.name,t:b.fin,pr:b.pr,col:b.col})):[]);
   rows.sort((a,b)=>(a.t??1e12)-(b.t??1e12)||b.pr-a.pr);
   const ol=document.createElement('ol');
   for(const r of rows){const li=document.createElement('li');if(r.me)li.className='me';const dot=document.createElement('i');dot.style.background=r.col;li.append(dot,document.createTextNode(r.name));
@@ -1569,7 +1837,7 @@ function renderRecap(tot){
   for(const [k,v] of items){const d=document.createElement('div');const b=document.createElement('b');b.textContent=v;const sp=document.createElement('span');sp.textContent=k;d.append(b,sp);el.appendChild(d);}
   // carte
   const cvR=document.getElementById('recapMap'),c=cvR.getContext('2d'),CWr=cvR.width,CHr=cvR.height;
-  const tracks=[{pts:S.track,col:'#e2583e',w:5}].concat((S.bots||[]).filter(b=>b.trk&&b.trk.length>1).map(b=>({pts:b.trk,col:b.col,w:2.6})));
+  const tracks=[{pts:S.track,col:'#e2583e',w:5}].concat((S.bots||[]).concat(NET?NET.all:[]).filter(b=>b.trk&&b.trk.length>1).map(b=>({pts:b.trk,col:b.col,w:2.6})));
   let x0=1e9,y0=1e9,x1=-1e9,y1=-1e9;
   for(const t of tracks)for(const p of t.pts){x0=Math.min(x0,p[0]);y0=Math.min(y0,p[1]);x1=Math.max(x1,p[0]);y1=Math.max(y1,p[1]);}
   x0=Math.min(x0,LINE_B.x);x1=Math.max(x1,LINE_A.x);
